@@ -1,0 +1,23 @@
+---
+- name: Test host statuses
+  hosts: all
+  
+  tasks:
+    - name: Succeed on some hosts
+      ansible.builtin.command: /bin/true
+      when: inventory_hostname in ['host1.example.com', 'host2.example.com']
+
+    - name: Fail on some hosts
+      ansible.builtin.command: /bin/false
+      when: inventory_hostname in ['host3.example.com', 'host4.example.com']
+      ignore_errors: yes
+
+    - name: Collect succeeded hosts
+      ansible.builtin.set_stats:
+        data:
+          succeeded_hosts: "{{ ansible_play_hosts | select('in', ansible_play_hosts_all | difference(play_hosts | select('failed'))) | list }}"
+
+    - name: Collect failed hosts
+      ansible.builtin.set_stats:
+        data:
+          failed_hosts: "{{ ansible_play_hosts | select('in', play_hosts | select('failed')) | list }}"
