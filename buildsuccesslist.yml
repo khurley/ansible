@@ -2,6 +2,7 @@
 - name: Track successful and failed hosts
   hosts: all
   gather_facts: no
+  ignore_unreachable: yes
   tasks:
     # Example task that may fail on some hosts
     - name: Run a command that might fail
