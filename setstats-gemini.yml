@@ -18,29 +18,54 @@
       # To simulate unreachable, ensure this host is not in your inventory
       # or is firewalled. Ansible will handle the unreachable state.
 
-- name: Display host status summary
+        #- name: Display host status summary
+        #  hosts: localhost
+        #  gather_facts: false
+        # run_once: true
+
+        #  tasks:
+        #    - name: Calculate successful hosts
+        #      ansible.builtin.set_fact:
+        # Combine failed and unreachable hosts into one list
+        #        failed_and_unreachable: >-
+        #          {{ hostvars['localhost']['ansible_play_failed_hosts'] | default([]) +
+        #             hostvars['localhost']['ansible_play_unreachable_hosts'] | default([]) }}
+        # Get all hosts and subtract the failed/unreachable ones
+        #        successful_hosts: >-
+        #          {{ hostvars['localhost']['ansible_play_hosts_all'] |
+        #             difference(failed_and_unreachable) }}
+
+        #    - name: Print the final lists
+        #      ansible.builtin.debug:
+        #        msg:
+        #          - "SUCCESSFUL HOSTS: {{ successful_hosts }}"
+        #          - "FAILED HOSTS: {{ ansible_play_failed_hosts | default('None') }}"
+        #          - "UNREACHABLE HOSTS: {{ ansible_play_unreachable_hosts | default('None') }}"
+
+# ... (your existing plays and tasks run here) ...
+
+- name: Create job summary artifact for notifications
   hosts: localhost
   gather_facts: false
   run_once: true
 
   tasks:
-    - name: Calculate successful hosts
+    - name: Prepare host status data
       ansible.builtin.set_fact:
-        # Combine failed and unreachable hosts into one list
-        failed_and_unreachable: >-
-          {{ hostvars['localhost']['ansible_play_failed_hosts'] | default([]) +
-             hostvars['localhost']['ansible_play_unreachable_hosts'] | default([]) }}
-        # Get all hosts and subtract the failed/unreachable ones
-        successful_hosts: >-
-          {{ hostvars['localhost']['ansible_play_hosts_all'] |
-             difference(failed_and_unreachable) }}
+        host_summary:
+          successful: >-
+            {{ ansible_play_hosts_all |
+               difference(ansible_play_failed_hosts | default([])) |
+               difference(ansible_play_unreachable_hosts | default([])) }}
+          failed: "{{ ansible_play_failed_hosts | default([]) }}"
+          unreachable: "{{ ansible_play_unreachable_hosts | default([]) }}"
+          total_count: "{{ ansible_play_hosts_all | length }}"
+      # The 'vars' section is not needed if you access the variables directly.
 
-    - name: Print the final lists
-      ansible.builtin.debug:
-        msg:
-          - "SUCCESSFUL HOSTS: {{ successful_hosts }}"
-          - "FAILED HOSTS: {{ ansible_play_failed_hosts | default('None') }}"
-          - "UNREACHABLE HOSTS: {{ ansible_play_unreachable_hosts | default('None') }}"
+    - name: Set job artifact with host summary
+      awx.awx.set_stats:
+        data: "{{ host_summary }}"
+        per_host: false
 
 # ... (your existing plays and tasks run here) ...
 
