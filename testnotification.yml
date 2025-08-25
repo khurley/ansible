@@ -14,11 +14,9 @@
     - name: Collect succeeded hosts
       ansible.builtin.set_stats:
         data:
-          succeeded_hosts: "{{ ansible_play_hosts_all | difference(ansible_failed_hosts) | list }}"
-      when: ansible_failed_hosts is defined
+          succeeded_hosts: "{{ ansible_play_hosts_all | difference(ansible_failed_hosts | default([])) | list }}"
 
     - name: Collect failed hosts
       ansible.builtin.set_stats:
         data:
-          failed_hosts: "{{ ansible_failed_hosts | list }}"
-      when: ansible_failed_hosts is defined
+          failed_hosts: "{{ ansible_failed_hosts | default([]) | list }}"
