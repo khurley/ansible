@@ -1,7 +1,6 @@
 ---
 - name: Test host statuses
   hosts: all
-  
   tasks:
     - name: Succeed on some hosts
       ansible.builtin.command: /bin/true
@@ -15,9 +14,11 @@
     - name: Collect succeeded hosts
       ansible.builtin.set_stats:
         data:
-          succeeded_hosts: "{{ ansible_play_hosts | select('in', ansible_play_hosts_all | difference(play_hosts | select('failed'))) | list }}"
+          succeeded_hosts: "{{ ansible_play_hosts_all | difference(ansible_failed_hosts) | list }}"
+      when: ansible_failed_hosts is defined
 
     - name: Collect failed hosts
       ansible.builtin.set_stats:
         data:
-          failed_hosts: "{{ ansible_play_hosts | select('in', play_hosts | select('failed')) | list }}"
+          failed_hosts: "{{ ansible_failed_hosts | list }}"
+      when: ansible_failed_hosts is defined
