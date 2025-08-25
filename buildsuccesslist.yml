@@ -1,6 +1,7 @@
 ---
 - name: Track successful and failed hosts
   hosts: all
+  gather_facts: no
   tasks:
     # Example task that may fail on some hosts
     - name: Run a command that might fail
@@ -26,6 +27,7 @@
 
 - name: Save and report host lists
   hosts: localhost
+  gather_facts: no
   tasks:
     # Save successful hosts as a fact
     - name: Set successful hosts fact
@@ -46,11 +48,11 @@
     #  dest: /tmp/successful_hosts.txt
     #when: groups['successful_hosts'] is defined
 
-    - name: Write failed hosts to a file
-      ansible.builtin.copy:
-        content: "{{ groups['failed_hosts'] | default([]) | join('\n') }}"
-        dest: /tmp/failed_hosts.txt
-      when: groups['failed_hosts'] is defined
+          #- name: Write failed hosts to a file
+          #  ansible.builtin.copy:
+          #    content: "{{ groups['failed_hosts'] | default([]) | join('\n') }}"
+          #     dest: /tmp/failed_hosts.txt
+          #  when: groups['failed_hosts'] is defined
 
     # Store lists in job stats for notification
     - name: Set job stats for notification
