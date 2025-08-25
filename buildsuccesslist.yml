@@ -9,7 +9,7 @@
       ansible.builtin.command: /bin/true  # Replace with your actual task
       register: result
       ignore_errors: true
-      failed_when: false
+        #     failed_when: false
 
     # Add successful hosts to in-memory group
     - name: Add successful hosts to in-memory group
