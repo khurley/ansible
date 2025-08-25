@@ -63,7 +63,7 @@
       # The 'vars' section is not needed if you access the variables directly.
 
     - name: Set job artifact with host summary
-      awx.awx.set_stats:
+      ansible.builtin.set_stats:
         data: "{{ host_summary }}"
         per_host: false
 
