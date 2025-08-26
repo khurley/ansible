@@ -1,0 +1,34 @@
+---
+- name: Record successful and failed hosts
+  hosts: all
+  gather_facts: no
+
+  tasks:
+    # Example task that may fail on some hosts
+    - name: Run a command that might fail
+      ansible.builtin.command: /bin/true  # Replace with your actual task
+      register: result
+      ignore_errors: true
+
+
+    - name: Gather task results
+      ansible.builtin.include_tasks:
+        file: tasks/gather_results.yml
+
+    - name: Categorize hosts
+      ansible.builtin.set_fact:
+        host_status: "{{ (host_results | selectattr('changed', 'defined') | select('changed') | list) +
+                      [item] }}"
+      loop: "{{ groups['all'] }}"
+      when: host_results is defined
+
+    - name: Display successful hosts
+      ansible.builtin.debug:
+        msg: "Successful hosts: {{ host_status }}"
+      when: host_status is defined and not host_status | difference([item.hostname | default(item)]) | list | length
+
+    - name: Display failed hosts
+      ansible.builtin.debug:
+        msg: "Failed hosts: {{ host_results | rejectattr('changed') | map(attribute='hostname') | list | difference([item]) | list }}"
+      loop: "{{ groups['all'] }}"
+      when: host_results is defined and host_status is defined and host_status | difference([item.hostname | default(item)]) | list | length
