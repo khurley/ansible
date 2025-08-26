@@ -1,6 +1,7 @@
 ---
 - name: Create fact of failed hosts
   hosts: all
+  ignore_unreachable: yes
   tasks:
     - name: Display ansible_play_hosts_all
       delegate_to: localhost
