@@ -1,0 +1,31 @@
+---
+- name: Create fact of failed hosts
+  hosts: all
+  tasks:
+    - name: Display ansible_play_hosts_all
+      delegate_to: localhost
+      run_once: true
+      ansible.builtin.debug:
+        var: ansible_play_hosts_all
+
+    # Example task that may fail on some hosts
+    - name: Run a command that might fail
+      ansible.builtin.command: /bin/true  # Replace with your actual task
+      register: result
+      ignore_errors: true
+
+    - name: Display ansible_play_hosts (hosts that have not failed)
+      delegate_to: localhost
+      run_once: true
+      ansible.builtin.debug:
+        var: ansible_play_hosts
+
+    - name: Use difference filter to create fact of failed hosts only
+      ansible.builtin.set_fact:
+        ansible_failed_hosts: "{{ ansible_play_hosts | ansible.builtin.difference(ansible_play_hosts_all) }}"
+
+    - name: Display failed hosts fact
+      delegate_to: localhost
+      run_once: true
+      ansible.builtin.debug:
+        var: ansible_failed_hosts
