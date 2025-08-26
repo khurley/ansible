@@ -1,0 +1,39 @@
+---
+- name: Test host statuses
+  hosts: all
+  tasks:
+    - name: Debug inventory hosts
+      ansible.builtin.debug:
+        msg: "Running on host: {{ inventory_hostname }}, All hosts: {{ ansible_play_hosts_all }}"
+
+    - name: Succeed on some hosts
+      ansible.builtin.command: /bin/true
+      when: inventory_hostname in ['managedhost1.khurley.local', 'resources4exam.khurley.local']
+      register: success_result
+
+    - name: Fail on some hosts
+      ansible.builtin.command: /bin/false
+      when: inventory_hostname in ['host3.example.com', 'host4.example.com']
+      ignore_errors: yes
+      register: fail_result
+
+    - name: Debug task results
+      ansible.builtin.debug:
+        msg: "Success result: {{ success_result | default({}) }}, Fail result: {{ fail_result | default({}) }}"
+
+    - name: Collect succeeded hosts
+      ansible.builtin.set_stats:
+        data:
+          succeeded_hosts: "{{ ansible_play_hosts_all | difference(ansible_failed_hosts | default([])) | list }}"
+      run_once: true  # Ensure it runs once per play
+
+    - name: Collect failed hosts
+      ansible.builtin.set_stats:
+        data:
+          failed_hosts: "{{ ansible_failed_hosts | default([]) | list }}"
+      run_once: true  # Ensure it runs once per play
+
+    - name: Debug artifacts
+      ansible.builtin.debug:
+        msg: "Artifacts: {{ ansible_facts.set_stats_data | default({}) }}"
+      run_once: true
