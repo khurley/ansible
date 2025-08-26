@@ -63,3 +63,8 @@
           successful_hosts: "{{ groups['successful_hosts'] | default([]) | join(', ') }}"
           failed_hosts: "{{ groups['failed_hosts'] | default([]) | join(', ') }}"
       run_once: true
+
+
+    - name: Debug artifacts
+      ansible.builtin.debug:
+        msg: "Artifacts: {{ ansible_facts.set_stats_data | default({}) }}"
