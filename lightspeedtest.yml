@@ -10,11 +10,6 @@
       register: result
       ignore_errors: true
 
-
-    - name: Gather task results
-      ansible.builtin.include_tasks:
-        file: tasks/gather_results.yml
-
     - name: Categorize hosts
       ansible.builtin.set_fact:
         host_status: "{{ (host_results | selectattr('changed', 'defined') | select('changed') | list) +
