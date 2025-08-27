@@ -2,13 +2,13 @@
 - name: Track successful and failed hosts
   hosts: all
   gather_facts: no
-  ignore_unreachable: yes
+    #  ignore_unreachable: yes
   tasks:
     # Example task that may fail on some hosts
     - name: Run a command that might fail
       ansible.builtin.command: /bin/true  # Replace with your actual task
       register: result
-      ignore_errors: true
+        #      ignore_errors: true
         #     failed_when: false
 
     # Add successful hosts to in-memory group
@@ -28,8 +28,12 @@
       loop: "{{ ansible_play_hosts }}"
 
         # Add an UNREACHABLE task here
-        #- name: Add unreachable hosts to an in-memory group
-        #  ansible.builtin.add_host:
+        #    - name: Add unreachable hosts to in-memory group
+        #ansible.builtin.add_host:
+        #name: "{{ item }}"
+        #groups: unreachable_hosts
+        #when: result is failed
+        #loop: "{{ ansible_play_hosts }}"
 
 
 
@@ -38,29 +42,17 @@
   gather_facts: no
   tasks:
     # Save successful hosts as a fact
-    - name: Set successful hosts fact
-      ansible.builtin.set_fact:
-        successful_hosts_list: "{{ groups['successful_hosts'] | default([]) | join(', ') }}"
-        cacheable: yes
+    #    - name: Set successful hosts fact
+    #  ansible.builtin.set_fact:
+    #    successful_hosts_list: "{{ groups['successful_hosts'] | default([]) | join(', ') }}"
+    #    cacheable: yes
 
     # Save failed hosts as a fact
-    - name: Set failed hosts fact
-      ansible.builtin.set_fact:
-        failed_hosts_list: "{{ groups['failed_hosts'] | default([]) | join(', ') }}"
-        cacheable: yes
+    #- name: Set failed hosts fact
+    #  ansible.builtin.set_fact:
+    #    failed_hosts_list: "{{ groups['failed_hosts'] | default([]) | join(', ') }}"
+    #    cacheable: yes
 
-    # Save lists to files (optional, for persistence)
-    #- name: Write successful hosts to a file
-    #  ansible.builtin.copy:
-    #  content: "{{ groups['successful_hosts'] | default([]) | join('\n') }}"
-    #  dest: /tmp/successful_hosts.txt
-    #when: groups['successful_hosts'] is defined
-
-          #- name: Write failed hosts to a file
-          #  ansible.builtin.copy:
-          #    content: "{{ groups['failed_hosts'] | default([]) | join('\n') }}"
-          #     dest: /tmp/failed_hosts.txt
-          #  when: groups['failed_hosts'] is defined
 
     # Store lists in job stats for notification
     - name: Set job stats for notification
