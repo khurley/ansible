@@ -71,6 +71,12 @@
       run_once: true
 
 
+- name: Play to debug stats
+  hosts: localhost
+  gather_facts: false
+  run_once: true
+
+  tasks:
     - name: Debug artifacts
       ansible.builtin.debug:
-        msg: "Artifacts: {{ ansible_stats | default({}) }}"
+        msg: "Artifacts: {{ ansible_stats }}"
