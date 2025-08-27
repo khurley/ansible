@@ -71,6 +71,11 @@
       run_once: true
 
 
+    - name: Store stats in a fact
+      ansible.builtin.set_fact:
+        play_stats: "{{ ansible_stats }}"
+      run_once: true
+
 - name: Play to debug stats
   hosts: localhost
   gather_facts: false
@@ -79,4 +84,4 @@
   tasks:
     - name: Debug artifacts
       ansible.builtin.debug:
-        msg: "Artifacts: {{ ansible_stats }}"
+        msg: "Artifacts: {{ hostvars['localhost']['play_stats'] }}"
