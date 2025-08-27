@@ -69,12 +69,14 @@
           successful_hosts: "{{ groups['successful_hosts'] | default([]) | join(', ') }}"
           failed_hosts: "{{ groups['failed_hosts'] | default([]) | join(', ') }}"
       run_once: true
+      notify: Store Stats
 
-
-    - name: Store stats in a fact
+  handlers:
+    - name: Store Stats
       ansible.builtin.set_fact:
         play_stats: "{{ ansible_stats }}"
       run_once: true
+
 
 - name: Play to debug stats
   hosts: localhost
