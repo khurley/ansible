@@ -28,8 +28,8 @@
       loop: "{{ ansible_play_hosts }}"
 
         # Add an UNREACHABLE task here
-    - name: Add unreachable hosts to an in-memory group
-      ansible.builtin.add_host:
+        #- name: Add unreachable hosts to an in-memory group
+        #  ansible.builtin.add_host:
 
 
 
