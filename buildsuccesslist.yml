@@ -70,19 +70,19 @@
           failed_hosts: "{{ groups['failed_hosts'] | default([]) | join(', ') }}"
       run_once: true
 
-    - name: Store Stats
-      ansible.builtin.set_fact:
-        play_stats: "{{ ansible_stats }}"
-      run_once: true
-      delegate_to: localhost
+        #    - name: Store Stats
+        #  ansible.builtin.set_fact:
+        #play_stats: "{{ ansible_stats }}"
+        #run_once: true
+        #delegate_to: localhost
 
 
-- name: Play to debug stats
-  hosts: localhost
-  gather_facts: false
-  run_once: true
+        #- name: Play to debug stats
+        #  hosts: localhost
+        #  gather_facts: false
+        #  run_once: true
 
-  tasks:
-    - name: Debug artifacts
-      ansible.builtin.debug:
-        msg: "Artifacts: {{ hostvars['localhost']['play_stats'] }}"
+        #  tasks:
+        #    - name: Debug artifacts
+        #      ansible.builtin.debug:
+        #        msg: "Artifacts: {{ hostvars['localhost']['play_stats'] }}"
