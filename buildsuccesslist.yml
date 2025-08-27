@@ -73,4 +73,4 @@
 
     - name: Debug artifacts
       ansible.builtin.debug:
-        msg: "Artifacts: {{ ansible_facts.ansible_stats | default({}) }}"
+        msg: "Artifacts: {{ ansible_stats | default({}) }}"
